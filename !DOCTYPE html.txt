@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prescription</title><meta name="robots" content="noindex"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f2f2f2;font:15px/1.55 Montserrat,"Segoe UI",Roboto,Arial,sans-serif;color:#111;letter-spacing:.02em}
+#app{max-width:1000px;margin:0 auto;padding:16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.bar button,.bar .btn{background:#f44a4a;color:#fff;border:0;border-radius:3px;padding:10px 16px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none}
+#msg{font-size:13px;color:#555}
+.sheet{background:#fff;padding:28px 32px 40px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+header{text-align:center;border-bottom:1px solid #999;padding-bottom:12px;margin-bottom:12px}
+header h1{font-size:26px;font-weight:600;margin:0 0 6px}header div{font-size:14px}
+.who{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #999;padding-bottom:10px}
+.who .dr{text-align:right}
+h2{text-align:center;font-size:15px;font-weight:600;margin:20px 0 4px;letter-spacing:.05em}
+.note{text-align:center;color:#666;font-size:13px;margin:0 0 6px}
+.kvs{margin:18px 0}.kv{display:grid;grid-template-columns:160px 30px 1fr;margin:6px 0}.up{text-transform:uppercase}
+h3{font-size:15px;margin:20px 0 8px}
+table{width:100%;border-collapse:collapse}th{text-align:left;background:#fafafa;border-top:1px solid #eee;border-bottom:1px solid #ddd;padding:6px 8px}
+td{padding:6px 8px;border-bottom:1px solid #e5e5e5;vertical-align:top}th:first-child,td:first-child{width:38%}
+.after{margin-top:14px}
+.sign{margin:70px 0 0 auto;width:300px;text-align:center}.sign .line{border-top:1px solid #333;margin-bottom:6px}
+.foot{font-size:12px;color:#666;margin-top:12px}.small{font-size:12px;color:#555;margin-top:18px}tr.flag td{color:#b42318}table.lab th:first-child,table.lab td:first-child{width:34%}
+@media (max-width:640px){
+  #app{padding:8px}.sheet{padding:16px 14px 28px}header h1{font-size:21px}
+  .who{flex-direction:column}.who .dr{text-align:left}
+  .kv{grid-template-columns:110px 14px 1fr}
+  thead{display:none}table,tbody,tr,td{display:block;width:100%!important}
+  tr{border-bottom:1px solid #ddd;padding:6px 0}td{border:0;padding:2px 0;display:flex;gap:10px}
+  td:first-child{font-weight:600}td:not(:first-child)::before{content:attr(data-l);color:#777;min-width:90px}td:empty{display:none}
+  .sign{margin-top:44px;width:220px}
+}
+@media print{body{background:#fff}.no-print{display:none}.sheet{box-shadow:none;padding:0}#app{padding:0}}</style></head>
+<body><main id="app" aria-live="polite"><article class="sheet"><p>Loading prescription…</p></article></main>
+<script>(()=>{var f="abcdefghijklmnopqrstuvwxyz234567";function v(t){let i=[],s=0,e=0;for(let r of t){let a=f.indexOf(r);if(a<0)throw new Error("bad link");e=(e<<5|a)&65535,s+=5,s>=8&&(i.push(e>>>s-8&255),s-=8)}return new Uint8Array(i)}async function w(t,i){let s=new Response(new Blob([t]).stream().pipeThrough(i));return new Uint8Array(await s.arrayBuffer())}async function c(t){let i=t.replace(/^#/,""),s=/^(rx|lab)-([a-z2-7]+)$/.exec(i);if(!s)throw new Error("This link does not contain a prescription or report.");let e;try{e=JSON.parse(new TextDecoder().decode(await w(v(s[2]),new DecompressionStream("deflate-raw"))))}catch{throw new Error("This link is incomplete or damaged. Ask the clinic to send it again.")}if(s[1]==="rx"&&e&&e.v===2&&Array.isArray(e.meds))return{kind:"rx",data:e};if(s[1]==="lab"&&e&&e.v===1&&Array.isArray(e.sections))return{kind:"lab",data:e};throw new Error("This link is not recognised. Ask the clinic to send it again.")}var n=t=>String(t||"").replace(/[&<>"]/g,i=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[i]),l=t=>n(t).replace(/\n/g,"<br>"),g=(t,i,s)=>`<div class="bar no-print"><button type="button" id="print">Print / Save PDF</button><a class="btn" href="${`https://wa.me/?text=${encodeURIComponent(`${s} for ${t} from ${i}: ${location.href}`)}`}" target="_blank" rel="noopener">Share on WhatsApp</a><button type="button" id="copy">Copy link</button><span id="msg" role="status"></span></div>`,h=t=>`<header><h1>${n(t.clinic)}</h1>${t.address?`<div>${n(t.address)}</div>`:""}${t.cityLine?`<div>${n(t.cityLine)}</div>`:""}</header>`,u=t=>`
+  <section class="who"><div>
+    <div><b>${n(t.pet)}</b>${t.sex?` <span>(${n(t.sex)})</span>`:""}</div>
+    ${t.uhid?`<div><b>UHID :</b> ${n(t.uhid)}</div>`:""}${t.petInfo?`<div>${n(t.petInfo)}</div>`:""}
+    ${t.owner||t.ownerMobile?`<div>${n([t.owner,t.ownerMobile].filter(Boolean).join("  "))}</div>`:""}
+  </div><div class="dr">
+    <div><b>${n(t.doctor)}</b></div>${t.qualification?`<div>${n(t.qualification)}</div>`:""}${t.reg?`<div>Registration No.: ${n(t.reg)}</div>`:""}
+  </div></section>`;function b(){document.getElementById("print").onclick=()=>window.print(),document.getElementById("copy").onclick=async()=>{let t=document.getElementById("msg");try{await navigator.clipboard.writeText(location.href),t.textContent="Link copied"}catch{t.textContent="Copy the address from the address bar"}}}function x(t){document.title=`Lab report \xB7 ${t.pet} \xB7 ${t.clinic}`;let i=(e,r)=>r?`<div class="kv"><b>${e}</b><span class="colon">:</span><span>${n(r)}</span></div>`:"",s=t.sections.map(([e,r])=>`<h3>${n(e)}</h3><table class="lab"><thead><tr><th>Test</th><th>Result</th><th>Unit</th><th>Reference range</th><th>Flag</th></tr></thead><tbody>${r.map(([a,p,m,y,o])=>`<tr class="${o?"flag":""}"><td data-l="Test">${n(a)}</td><td data-l="Result"><b>${n(p)}</b></td><td data-l="Unit">${n(m)}</td><td data-l="Reference">${n(y)}</td><td data-l="Flag">${n(o)}</td></tr>`).join("")}</tbody></table>`).join("");document.getElementById("app").innerHTML=`${g(t.pet,t.clinic,"Lab report")}
+    <article class="sheet">${h(t)}${u(t)}
+      <h2>LABORATORY REPORT</h2>${t.note?`<p class="note">${n(t.note)}</p>`:""}
+      <section class="kvs">${i("Lab no.",t.number)}${i("Collected",t.collected)}${i("Sample",t.sample)}${i("Tests",t.tests)}${i("Analyser",t.analyser)}</section>
+      ${s||"<p>No results.</p>"}
+      ${t.comments?`<section class="kvs after"><div class="kv"><b>Comments</b><span class="colon">:</span><span>${l(t.comments)}</span></div></section>`:""}
